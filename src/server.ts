@@ -1,21 +1,12 @@
 import { createApp } from "./app.js";
+import { env } from "./config/env.js";
 
 const startServer = async (): Promise<void> => {
-  try {
-    const app = createApp();
-    const port = Number(process.env.PORT);
+  const app = createApp();
 
-    if (isNaN(port)) {
-      throw new Error("Invalid port number");
-    }
-
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  }
+  app.listen(env.PORT, () => {
+    console.log(`Servidor rodando na porta ${String(env.PORT)} 🚀`);
+  });
 };
 
 startServer();
