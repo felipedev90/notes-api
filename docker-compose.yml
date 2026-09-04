@@ -3,6 +3,8 @@ services:
     build: .
     ports:
       - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://notes_user:Senha*123@postgres:5432/notes_db
     depends_on:
       - postgres
 
@@ -12,6 +14,8 @@ services:
       POSTGRES_USER: notes_user
       POSTGRES_PASSWORD: Senha*123
       POSTGRES_DB: notes_db
+    ports:
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
 
