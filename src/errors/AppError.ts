@@ -8,9 +8,12 @@ export class AppError extends Error {
   }
 }
 
-export class NotFoundError extends AppError {
-  constructor(message = "Resource not found") {
-    super(404, message);
+export class ValidationError extends AppError {
+  constructor(
+    message = "Invalid input data",
+    public details?: unknown
+  ) {
+    super(400, message);
   }
 }
 
@@ -23,5 +26,11 @@ export class UnauthorizedError extends AppError {
 export class ForbiddenError extends AppError {
   constructor(message = "Forbidden") {
     super(403, message);
+  }
+}
+
+export class NotFoundError extends AppError {
+  constructor(message = "Resource not found") {
+    super(404, message);
   }
 }
