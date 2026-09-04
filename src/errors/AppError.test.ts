@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { NotFoundError, UnauthorizedError, ForbiddenError, AppError } from "./AppError.js";
+import {
+  AppError,
+  NotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+  ValidationError,
+} from "./AppError.js";
 
 describe("AppError subclasses", () => {
   it("NotFoundError should have statusCode 404", () => {
@@ -21,6 +27,13 @@ describe("AppError subclasses", () => {
 
     expect(error.statusCode).toBe(403);
     expect(error.message).toBe("Forbidden");
+  });
+
+  it("ValidationError should have statusCode 403", () => {
+    const error = new ValidationError("Invalid input data");
+
+    expect(error.statusCode).toBe(400);
+    expect(error.message).toBe("Invalid input data");
   });
 
   it("should be an instance of AppError and Error", () => {
