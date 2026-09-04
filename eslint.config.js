@@ -3,6 +3,9 @@ import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
+  {
+    ignores: ["dist/", "node_modules/"],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
@@ -13,7 +16,6 @@ export default tseslint.config(
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
     },
-    ignores: ["dist/", "node_modules/"],
   },
   {
     files: ["**/*.test.ts"],
