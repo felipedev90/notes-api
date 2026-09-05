@@ -5,6 +5,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
   ValidationError,
+  ConflictError,
 } from "./AppError.js";
 
 describe("AppError subclasses", () => {
@@ -36,8 +37,8 @@ describe("AppError subclasses", () => {
     expect(error.message).toBe("Resource not found");
   });
 
-  it("NotFoundError should have statusCode 409", () => {
-    const error = new NotFoundError("Email already in use");
+  it("ConflictError should have statusCode 409", () => {
+    const error = new ConflictError("Email already in use");
 
     expect(error.statusCode).toBe(409);
     expect(error.message).toBe("Email already in use");
