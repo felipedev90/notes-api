@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { catchAsync } from "../../middlewares/catchAsync.js";
-import { registerUser } from "./auth.service.js";
+import { registerUser, loginUser } from "./auth.service.js";
 
 export const register = catchAsync(async (req: Request, res: Response): Promise<void> => {
   const user = await registerUser(req.body);
@@ -8,4 +8,10 @@ export const register = catchAsync(async (req: Request, res: Response): Promise<
 
   res.status(201).json(safeUser);
   return;
+});
+
+export const login = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  const authorizedUser = await loginUser(req.body);
+
+  res.status(200).json({ token: authorizedUser });
 });
