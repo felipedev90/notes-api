@@ -34,3 +34,9 @@ export class NotFoundError extends AppError {
     super(404, message);
   }
 }
+
+export class ConflictError extends AppError {
+  constructor(message = "Email already in use") {
+    super(409, message);
+  }
+}
