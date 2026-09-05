@@ -1,6 +1,7 @@
 import express, { type Express } from "express";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { NotFoundError } from "./errors/AppError.js";
+import authRouter from "./modules/auth/auth.route.js";
 
 export function createApp(): Express {
   const app: Express = express();
@@ -9,6 +10,8 @@ export function createApp(): Express {
     res.status(200).json({ status: "Success 🎉", message: "API is healthy 🙌🏼" });
   });
 
+  app.use(express.json());
+  app.use("/auth", authRouter);
   app.use((_req, _Res) => {
     throw new NotFoundError("Route not found");
   });
