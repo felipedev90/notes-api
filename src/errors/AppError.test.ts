@@ -8,11 +8,11 @@ import {
 } from "./AppError.js";
 
 describe("AppError subclasses", () => {
-  it("NotFoundError should have statusCode 404", () => {
-    const error = new NotFoundError("Resource not found");
+  it("ValidationError should have statusCode 403", () => {
+    const error = new ValidationError("Invalid input data");
 
-    expect(error.statusCode).toBe(404);
-    expect(error.message).toBe("Resource not found");
+    expect(error.statusCode).toBe(400);
+    expect(error.message).toBe("Invalid input data");
   });
 
   it("UnauthorizedError should have statusCode 401", () => {
@@ -29,11 +29,18 @@ describe("AppError subclasses", () => {
     expect(error.message).toBe("Forbidden");
   });
 
-  it("ValidationError should have statusCode 403", () => {
-    const error = new ValidationError("Invalid input data");
+  it("NotFoundError should have statusCode 404", () => {
+    const error = new NotFoundError("Resource not found");
 
-    expect(error.statusCode).toBe(400);
-    expect(error.message).toBe("Invalid input data");
+    expect(error.statusCode).toBe(404);
+    expect(error.message).toBe("Resource not found");
+  });
+
+  it("NotFoundError should have statusCode 409", () => {
+    const error = new NotFoundError("Email already in use");
+
+    expect(error.statusCode).toBe(409);
+    expect(error.message).toBe("Email already in use");
   });
 
   it("should be an instance of AppError and Error", () => {
