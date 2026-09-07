@@ -15,3 +15,9 @@ export const login = catchAsync(async (req: Request, res: Response): Promise<voi
 
   res.status(200).json({ token: authorizedUser });
 });
+
+export function me(req: Request, res: Response) {
+  return res.status(200).json({
+    userId: req.userId,
+  });
+}
