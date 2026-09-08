@@ -15,7 +15,7 @@ model User {
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
     notes         Note[]
-    RefreshTokens RefreshToken[]
+    refreshTokens RefreshToken[]
 }
 
 model Note {
@@ -26,6 +26,8 @@ model Note {
     content       String
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
+
+    @@index([userId])
 }
 
 model RefreshToken {
@@ -35,4 +37,6 @@ model RefreshToken {
     token         String @unique
     expiresAt     DateTime
     createdAt     DateTime  @default(now())
+
+    @@index([userId])
 }
