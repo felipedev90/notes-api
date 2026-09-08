@@ -15,6 +15,7 @@ model User {
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
     notes         Note[]
+    RefreshTokens RefreshToken[]
 }
 
 model Note {
@@ -25,4 +26,13 @@ model Note {
     content       String
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
+}
+
+model RefreshToken {
+    id            String @id @default(uuid())
+    userId        String
+    user          User @relation(fields: [userId], references: [id])
+    token         String @unique
+    expiresAt     DateTime
+    createdAt     DateTime  @default(now())
 }

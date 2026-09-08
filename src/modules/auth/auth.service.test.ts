@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { registerUser, loginUser } from "./auth.service.js";
-import { createUser, findUserByEmail } from "./auth.repository.js";
+import { createUser, findUserByEmail, createRefreshToken } from "./auth.repository.js";
 import { hashPassword, comparePassword } from "./password.js";
 import { ConflictError, UnauthorizedError } from "../../errors/AppError.js";
 import jwt from "jsonwebtoken";
@@ -88,7 +88,7 @@ describe("loginUser", () => {
     );
   });
 
-  it("should return a token when credentials are valid", async () => {
+  it("should return access and refresh tokens when credentials are valid", async () => {
     vi.mocked(findUserByEmail).mockResolvedValue({
       id: "1",
       userName: "felipe",
@@ -98,13 +98,23 @@ describe("loginUser", () => {
       updatedAt: new Date(),
     });
     vi.mocked(comparePassword).mockResolvedValue(true);
-    vi.mocked(jwt.sign).mockReturnValue("fake-token" as never);
-
-    const token = await loginUser({ email: "felipe@teste.com", password: "senha1234" });
-
-    expect(jwt.sign).toHaveBeenCalledWith({ userId: "1" }, expect.any(String), {
-      expiresIn: "1h",
+    vi.mocked(jwt.sign).mockReturnValue("fake-access-token" as never);
+    vi.mocked(createRefreshToken).mockResolvedValue({
+      id: "rt-1",
+      userId: "1",
+      token: "fake-refresh-token",
+      expiresAt: new Date(),
+      createdAt: new Date(),
     });
-    expect(token).toBe("fake-token");
+
+    const tokens = await loginUser({ email: "felipe@teste.com", password: "senha1234" });
+
+    expect(tokens.accessToken).toBe("fake-access-token");
+    expect(typeof tokens.refreshToken).toBe("string");
+    expect(createRefreshToken).toHaveBeenCalledWith({
+      userId: "1",
+      token: tokens.refreshToken,
+      expiresAt: expect.any(Date),
+    });
   });
 });

@@ -11,5 +11,10 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password required "),
 });
 
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, "Refresh Token must be at least 1 character"),
+});
+
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
+export type RefreshTokenFormData = z.infer<typeof refreshTokenSchema>;
