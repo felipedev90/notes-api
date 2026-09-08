@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { registerUser, loginUser } from "./auth.service.js";
-import { createUser, findUserByEmail } from "./auth.repository.js";
+import { registerUser, loginUser, logoutUser, refreshAccessToken } from "./auth.service.js";
+import {
+  createUser,
+  findUserByEmail,
+  createRefreshToken,
+  findRefreshToken,
+  deleteRefreshToken,
+} from "./auth.repository.js";
 import { hashPassword, comparePassword } from "./password.js";
 import { ConflictError, UnauthorizedError } from "../../errors/AppError.js";
 import jwt from "jsonwebtoken";
@@ -88,7 +94,7 @@ describe("loginUser", () => {
     );
   });
 
-  it("should return a token when credentials are valid", async () => {
+  it("should return access and refresh tokens when credentials are valid", async () => {
     vi.mocked(findUserByEmail).mockResolvedValue({
       id: "1",
       userName: "felipe",
@@ -98,13 +104,91 @@ describe("loginUser", () => {
       updatedAt: new Date(),
     });
     vi.mocked(comparePassword).mockResolvedValue(true);
-    vi.mocked(jwt.sign).mockReturnValue("fake-token" as never);
-
-    const token = await loginUser({ email: "felipe@teste.com", password: "senha1234" });
-
-    expect(jwt.sign).toHaveBeenCalledWith({ userId: "1" }, expect.any(String), {
-      expiresIn: "1h",
+    vi.mocked(jwt.sign).mockReturnValue("fake-access-token" as never);
+    vi.mocked(createRefreshToken).mockResolvedValue({
+      id: "rt-1",
+      userId: "1",
+      token: "fake-refresh-token",
+      expiresAt: new Date(),
+      createdAt: new Date(),
     });
-    expect(token).toBe("fake-token");
+
+    const tokens = await loginUser({ email: "felipe@teste.com", password: "senha1234" });
+
+    expect(tokens.accessToken).toBe("fake-access-token");
+    expect(typeof tokens.refreshToken).toBe("string");
+    expect(createRefreshToken).toHaveBeenCalledWith({
+      userId: "1",
+      token: tokens.refreshToken,
+      expiresAt: expect.any(Date),
+    });
+  });
+});
+
+describe("logoutUser", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should delete the refresh token", async () => {
+    vi.mocked(deleteRefreshToken).mockResolvedValue({
+      id: "rt-1",
+      userId: "1",
+      token: "some-refresh-token",
+      expiresAt: new Date(),
+      createdAt: new Date(),
+    });
+
+    await logoutUser("some-refresh-token");
+
+    expect(deleteRefreshToken).toHaveBeenCalledWith("some-refresh-token");
+  });
+});
+
+describe("refreshAccessToken", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should throw UnauthorizedError when refresh token does not exist", async () => {
+    vi.mocked(findRefreshToken).mockResolvedValue(null);
+
+    await expect(refreshAccessToken("nonexistent-token")).rejects.toThrow(UnauthorizedError);
+  });
+
+  it("should throw UnauthorizedError when refresh token is expired", async () => {
+    vi.mocked(findRefreshToken).mockResolvedValue({
+      id: "rt-1",
+      userId: "1",
+      token: "expired-token",
+      expiresAt: new Date(Date.now() - 1000),
+      createdAt: new Date(),
+    });
+
+    await expect(refreshAccessToken("expired-token")).rejects.toThrow(UnauthorizedError);
+  });
+
+  it("should rotate the token and return new tokens when valid", async () => {
+    vi.mocked(findRefreshToken).mockResolvedValue({
+      id: "rt-1",
+      userId: "1",
+      token: "valid-token",
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+      createdAt: new Date(),
+    });
+    vi.mocked(jwt.sign).mockReturnValue("new-access-token" as never);
+    vi.mocked(createRefreshToken).mockResolvedValue({
+      id: "rt-2",
+      userId: "1",
+      token: "new-refresh-token",
+      expiresAt: new Date(),
+      createdAt: new Date(),
+    });
+
+    const tokens = await refreshAccessToken("valid-token");
+
+    expect(deleteRefreshToken).toHaveBeenCalledWith("valid-token");
+    expect(tokens.accessToken).toBe("new-access-token");
+    expect(typeof tokens.refreshToken).toBe("string");
   });
 });
