@@ -19,5 +19,14 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: notes_user
+      POSTGRES_PASSWORD: sua_senha
+      POSTGRES_DB: notes_test_db
+    ports:
+    - "5433:5432"
+
 volumes:
   db-data:
