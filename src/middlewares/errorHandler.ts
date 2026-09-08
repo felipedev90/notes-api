@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError, ValidationError } from "../errors/AppError.js";
+import { logger } from "../lib/logger.js";
 
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof AppError) {
@@ -11,7 +12,7 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     return;
   }
 
-  console.error(err);
+  logger.error(err);
   res.status(500).json({
     status: "error",
     message: "Something went wrong. Try again later...",
