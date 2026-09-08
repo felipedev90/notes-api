@@ -54,9 +54,9 @@ describe("notes.service", () => {
     it("should return the list of notes for the user", async () => {
       vi.mocked(findNotesByUserId).mockResolvedValue([fakeNote]);
 
-      const result = await getUserNotes("owner-id");
+      const result = await getUserNotes("owner-id", 1, 10);
 
-      expect(findNotesByUserId).toHaveBeenCalledWith("owner-id");
+      expect(findNotesByUserId).toHaveBeenCalledWith("owner-id", 0, 10);
       expect(result).toEqual([fakeNote]);
     });
   });

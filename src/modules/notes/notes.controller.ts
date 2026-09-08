@@ -17,7 +17,8 @@ export const createNote = catchAsync(async (req: Request, res: Response): Promis
 });
 
 export const getNotes = catchAsync(async (req: Request, res: Response): Promise<void> => {
-  const notes = await getUserNotes(req.userId);
+  const { page, pageSize } = req.validatedQuery as unknown as { page: number; pageSize: number };
+  const notes = await getUserNotes(req.userId, page, pageSize);
 
   res.status(200).json(notes);
   return;
