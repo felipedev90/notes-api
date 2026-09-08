@@ -10,3 +10,8 @@ export const updateNoteSchema = createNoteSchema
   .refine((data) => data.title !== undefined || data.content !== undefined, {
     message: "At least one field must be provided",
   });
+
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(50).default(10),
+});

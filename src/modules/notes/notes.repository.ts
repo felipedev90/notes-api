@@ -16,9 +16,11 @@ export async function createNote(note: CreateNoteInput) {
   });
 }
 
-export async function findNotesByUserId(userId: string) {
+export async function findNotesByUserId(userId: string, skip: number, take: number) {
   return prisma.note.findMany({
     where: { userId },
+    skip,
+    take,
   });
 }
 

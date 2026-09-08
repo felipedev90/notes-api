@@ -19,8 +19,9 @@ export async function createUserNote(note: CreateUserNoteInput) {
   return createNote(note);
 }
 
-export async function getUserNotes(userId: string) {
-  const note = await findNotesByUserId(userId);
+export async function getUserNotes(userId: string, page: number, pageSize: number) {
+  const skip = (page - 1) * pageSize;
+  const note = await findNotesByUserId(userId, skip, pageSize);
 
   return note;
 }
