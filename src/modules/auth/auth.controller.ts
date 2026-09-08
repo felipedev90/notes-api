@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { catchAsync } from "../../middlewares/catchAsync.js";
-import { registerUser, loginUser, refreshAccessToken } from "./auth.service.js";
+import { registerUser, loginUser, refreshAccessToken, logoutUser } from "./auth.service.js";
 
 export const register = catchAsync(async (req: Request, res: Response): Promise<void> => {
   const user = await registerUser(req.body);
@@ -27,4 +27,11 @@ export const refresh = catchAsync(async (req: Request, res: Response): Promise<v
   const refreshedToken = await refreshAccessToken(token);
 
   res.status(200).json(refreshedToken);
+});
+
+export const logout = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  const token = req.body.refreshToken;
+  await logoutUser(token);
+
+  res.status(204).send();
 });

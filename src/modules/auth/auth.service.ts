@@ -86,3 +86,7 @@ export async function refreshAccessToken(refreshTokenValue: string) {
 
   return generateAuthTokens(storedToken.userId);
 }
+
+export async function logoutUser(refreshTokenValue: string) {
+  return deleteRefreshToken(refreshTokenValue);
+}
