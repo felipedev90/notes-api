@@ -5,6 +5,7 @@ import authRouter from "./modules/auth/auth.route.js";
 import notesRouter from "./modules/notes/notes.route.js";
 import { pinoHttp } from "pino-http";
 import { logger } from "./lib/logger.js";
+import { prisma } from "./lib/prisma.js";
 
 export function createApp(): Express {
   const app: Express = express();
@@ -12,8 +13,13 @@ export function createApp(): Express {
   app.use(express.json());
   app.use(pinoHttp({ logger }));
 
-  app.get("/health", (_req, res) => {
-    res.status(200).json({ status: "Success 🎉", message: "API is healthy 🙌🏼" });
+  app.get("/health", async (_req, res) => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      res.status(200).json({ status: "ok", database: "connected" });
+    } catch {
+      res.status(503).json({ status: "error", database: "disconnected" });
+    }
   });
 
   app.use("/auth", authRouter);
